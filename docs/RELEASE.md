@@ -87,7 +87,7 @@ Enable GitHub Pages with `GitHub Actions` as the source. After a published
 release, users can add:
 
 ```text
-https://yuga-hashimoto.github.io/and-code/fdroid/repo/
+https://nastechresearch.github.io/and-code/fdroid/repo/
 ```
 
 The workflow retains the latest 100 non-draft, non-prerelease GitHub releases.
@@ -129,10 +129,10 @@ Categories:
 License: MIT
 AuthorName: Yu-ga
 RepoType: git
-Repo: https://github.com/yuga-hashimoto/and-code
-SourceCode: https://github.com/yuga-hashimoto/and-code
-IssueTracker: https://github.com/yuga-hashimoto/and-code/issues
-Changelog: https://github.com/yuga-hashimoto/and-code/releases
+Repo: https://github.com/nastechresearch/and-code
+SourceCode: https://github.com/nastechresearch/and-code
+IssueTracker: https://github.com/nastechresearch/and-code/issues
+Changelog: https://github.com/nastechresearch/and-code/releases
 
 AntiFeatures:
   NonFreeNet: optional GitHub OAuth sign-in, not required for core functionality
