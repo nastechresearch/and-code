@@ -113,7 +113,7 @@ jobs:
           body=$(cat <<EOF
           ## Upstream sync
 
-          This PR merges \\`$UPSTREAM_REF\\` from \\`$UPSTREAM_REPOSITORY\\` and reapplies the fork branding for \\`$FORK_OWNER/$FORK_REPOSITORY_NAME\\`.
+          This PR merges upstream ref $UPSTREAM_REF from $UPSTREAM_REPOSITORY and reapplies the fork branding for $FORK_OWNER/$FORK_REPOSITORY_NAME.
 
           The rebrand intentionally changes only references belonging to the original AndCode repository. External GitHub dependencies remain pointed at their real upstream projects.
 
@@ -123,5 +123,8 @@ jobs:
           if [[ -n "$existing" ]]; then
             gh pr edit "$existing" --title "$title" --body "$body"
           else
-            gh pr create --base main --head "$BRANCH" --title "$title" --body "$body"
+            if ! gh pr create --base main --head "$BRANCH" --title "$title" --body "$body"; then
+              echo "GitHub rejected PR creation. In repository Settings > Actions > General, enable 'Allow GitHub Actions to create and approve pull requests', then rerun this workflow." >&2
+              exit 1
+            fi
           fi
