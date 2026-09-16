@@ -98,7 +98,7 @@ jobs:
           config.write_text(
               "\n".join(
                   [
-                      "repo_url: https://yuga-hashimoto.github.io/and-code/fdroid/repo",
+                      "repo_url: https://nastechresearch.github.io/and-code/fdroid/repo",
                       "repo_name: AndCode F-Droid Repository",
                       "repo_description: Official AndCode APK repository for F-Droid clients.",
                       f"keystore: {quote(os.environ['RUNNER_TEMP'] + '/fdroid-repo.keystore')}",

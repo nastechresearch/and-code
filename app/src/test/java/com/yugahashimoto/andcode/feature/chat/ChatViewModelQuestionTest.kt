@@ -139,7 +139,7 @@ class ChatViewModelQuestionTest {
             val pending = viewModel.uiState.value.pendingQuestions.single()
             // The pending state must keep the raw, untrimmed text: trimming it here would strip
             // a trailing space the instant it's typed, silently joining words together in the
-            // text field (see https://github.com/yuga-hashimoto/and-code/issues/319).
+            // text field (see https://github.com/nastechresearch/and-code/issues/319).
             assertEquals(listOf("   src/main   "), pending.selectedAnswers.single())
             assertEquals("OpenCode question failed", pending.error)
             assertFalse(pending.isSubmitting)

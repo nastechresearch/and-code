@@ -11,16 +11,16 @@ import org.junit.Test
 class PullRequestLinksTest {
     @Test
     fun `reads a pull request link out of prose`() {
-        val refs = parsePullRequestRefs("Opened https://github.com/yuga-hashimoto/and-code/pull/170 for review.")
+        val refs = parsePullRequestRefs("Opened https://github.com/nastechresearch/and-code/pull/170 for review.")
 
-        assertEquals(listOf(PullRequestRef("yuga-hashimoto", "and-code", 170)), refs)
+        assertEquals(listOf(PullRequestRef("nastechresearch", "and-code", 170)), refs)
     }
 
     @Test
     fun `reads a link written as markdown`() {
-        val refs = parsePullRequestRefs("[#170](https://github.com/yuga-hashimoto/and-code/pull/170)")
+        val refs = parsePullRequestRefs("[#170](https://github.com/nastechresearch/and-code/pull/170)")
 
-        assertEquals(listOf(PullRequestRef("yuga-hashimoto", "and-code", 170)), refs)
+        assertEquals(listOf(PullRequestRef("nastechresearch", "and-code", 170)), refs)
     }
 
     @Test
@@ -35,7 +35,7 @@ class PullRequestLinksTest {
         val refs =
             parsePullRequestRefs(
                 "remote: Create a pull request for 'feature' on GitHub by visiting:\n" +
-                    "remote:      https://github.com/yuga-hashimoto/and-code/pull/new/feature",
+                    "remote:      https://github.com/nastechresearch/and-code/pull/new/feature",
             )
 
         assertTrue(refs.isEmpty())
@@ -45,7 +45,7 @@ class PullRequestLinksTest {
     fun `ignores links to other parts of GitHub`() {
         val refs =
             parsePullRequestRefs(
-                "https://github.com/yuga-hashimoto/and-code/issues/12 and https://github.com/yuga-hashimoto/and-code",
+                "https://github.com/nastechresearch/and-code/issues/12 and https://github.com/nastechresearch/and-code",
             )
 
         assertTrue(refs.isEmpty())

@@ -24,7 +24,7 @@ private const val AWAIT_TIMEOUT_MS = 5_000L
 
 class PullRequestStatusRepositoryTest {
     private lateinit var server: MockWebServer
-    private val ref = PullRequestRef("yuga-hashimoto", "and-code", 170)
+    private val ref = PullRequestRef("nastechresearch", "and-code", 170)
     private var now = 1_000L
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -67,7 +67,7 @@ class PullRequestStatusRepositoryTest {
         }
 
         val request = server.takeRequest(AWAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-        assertEquals("/repos/yuga-hashimoto/and-code/pulls/170", request?.path)
+        assertEquals("/repos/nastechresearch/and-code/pulls/170", request?.path)
         assertEquals("Bearer gho_secret", request?.getHeader("Authorization"))
     }
 
