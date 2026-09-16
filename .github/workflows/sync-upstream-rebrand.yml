@@ -75,7 +75,9 @@ jobs:
         run: |
           set -euo pipefail
           if git grep -n -i -E 'github\.com/yuga-hashimoto(/and-code)?([/?#)]|$)' -- \
-              ':(exclude).git/*' ':(exclude)docs/UPSTREAM_SYNC.md' ':(exclude)*.png' ':(exclude)*.jpg' ':(exclude)*.jpeg' \
+              ':(exclude).git/*' ':(exclude).github/workflows/sync-upstream-rebrand.yml' \
+              ':(exclude)scripts/rebrand_fork.sh' ':(exclude)docs/UPSTREAM_SYNC.md' \
+              ':(exclude)*.png' ':(exclude)*.jpg' ':(exclude)*.jpeg' \
               ':(exclude)*.gif' ':(exclude)*.webp' ':(exclude)*.mp4' ':(exclude)*.wav'; then
             echo "Original AndCode repository references remain. Review before merging." >&2
             exit 1
