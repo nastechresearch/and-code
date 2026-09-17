@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.yugahashimoto.andcode.benchmark"
+    namespace = "com.nastechresearch.andcode.benchmark"
     compileSdk = 35
 
     defaultConfig {

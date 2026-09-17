@@ -108,11 +108,11 @@ val hasReleaseSigning =
         }
 
 android {
-    namespace = "com.yugahashimoto.andcode"
+    namespace = "com.nastechresearch.andcode"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.yugahashimoto.andcode"
+        applicationId = "com.nastechresearch.andcode"
         minSdk = 26
         targetSdk = 35
         versionCode = 61

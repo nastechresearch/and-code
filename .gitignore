@@ -6,6 +6,7 @@ build/
 __pycache__/
 *.keystore
 *.jks
+.release-keys/
 .kotlin/
 .worktree/
 .env
