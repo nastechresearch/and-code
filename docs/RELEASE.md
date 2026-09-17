@@ -6,25 +6,24 @@ GitHub Actions builds `app-release-unsigned.apk`. These are for smoke testing on
 
 ## Signed release APK / AAB (local)
 
-1. Create a keystore (once):
+1. Create a keystore (once). The repository includes a generator that creates a
+   private, Git-ignored keystore and credentials file without printing secrets:
 
 ```bash
-keytool -genkey -v \
-  -keystore and-code-release.jks \
-  -keyalg RSA -keysize 2048 -validity 10000 \
-  -alias and-code
+./scripts/generate_release_keys.sh
 ```
 
-2. Add to `~/.gradle/gradle.properties` (do not commit):
+2. Source the generated `.release-keys/credentials.env` locally, or copy its
+   values to `~/.gradle/gradle.properties` (do not commit):
 
 ```properties
-ANDROID_CODE_STORE_FILE=/absolute/path/and-code-release.jks
-ANDROID_CODE_STORE_PASSWORD=...
-ANDROID_CODE_KEY_ALIAS=and-code
-ANDROID_CODE_KEY_PASSWORD=...
+AND_CODE_STORE_FILE=/absolute/path/and-code-release.jks
+AND_CODE_STORE_PASSWORD=...
+AND_CODE_KEY_ALIAS=andcode-release
+AND_CODE_KEY_PASSWORD=...
 ```
 
-3. Optional: wire `signingConfigs` in `app/build.gradle.kts` reading those properties, then:
+3. Build the signed artifact:
 
 ```bash
 ./gradlew assembleGithubRelease
@@ -65,6 +64,12 @@ and add these GitHub Actions secrets:
 - `F_DROID_REPO_KEYSTORE_PASSWORD`: keystore password
 - `F_DROID_REPO_KEY_ALIAS`: repository key alias
 - `F_DROID_REPO_KEY_PASSWORD`: repository key password
+
+The separate key and all four values can be generated locally with
+`./scripts/generate_fdroid_keys.sh`. It writes a Git-ignored keystore and a
+mode-600 credentials file under `.release-keys/`; copy the values into the
+matching repository secrets without committing either file. The APK release
+key and F-Droid repository key must remain different keys.
 
 For example, create the keystore locally with:
 
