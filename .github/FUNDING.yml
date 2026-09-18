@@ -1,4 +1,7 @@
 github: nastechresearch
-ko_fi: R5R51S97C4
-custom:
-  - https://paypal.me/yuga620
+# Additional sponsor links (Ko-fi, PayPal, ...) are added in a follow-up PR once
+# the fork maintainer's own handles are confirmed. The previous file listed the
+# upstream maintainer's personal PayPal handle (paypal.me/yuga620) and an unknown
+# Ko-fi code (R5R51S97C4); both were inherited from the upstream yuga-hashimoto
+# fork snapshot and routed sponsorship money outside the fork. They have been
+# removed rather than silently re-pointed.
