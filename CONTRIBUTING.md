@@ -39,7 +39,7 @@ CI validates commit messages on all PRs.
 ## Project Structure
 
 ```
-app/src/main/java/com/yugahashimoto/androidcode/
+app/src/main/java/com/nastechresearch/andcode/
 ├── data/          # API clients, repositories, models
 ├── runtime/       # On-device PRoot runtime management
 ├── ui/            # Jetpack Compose screens and components
