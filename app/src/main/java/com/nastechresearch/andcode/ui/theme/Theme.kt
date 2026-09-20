@@ -25,8 +25,47 @@ enum class AppTheme(val key: String) {
     MIDNIGHT("midnight"),
     CLAUDE("claude"),
     GHOSTTY("ghostty"),
+    AMOLED("amoled"),
+    OCEAN("ocean"),
+    ROSE("rose"),
+    NORD("nord"),
+    GLASS("glass"),
     AUTO("auto"),
     ;
+
+    val displayName: String
+        get() =
+            when (this) {
+                DARK -> "Dark"
+                LIGHT -> "Light"
+                ZINC -> "Zinc"
+                MIDNIGHT -> "Midnight"
+                CLAUDE -> "Claude"
+                GHOSTTY -> "Ghostty"
+                AMOLED -> "AMOLED Black"
+                OCEAN -> "Ocean"
+                ROSE -> "Rose"
+                NORD -> "Nord"
+                GLASS -> "Glassmorphism"
+                AUTO -> "System default"
+            }
+
+    val description: String
+        get() =
+            when (this) {
+                DARK -> "Balanced dark workspace"
+                LIGHT -> "Bright and minimal"
+                ZINC -> "Neutral graphite tones"
+                MIDNIGHT -> "Cool blue-black contrast"
+                CLAUDE -> "Warm terracotta surfaces"
+                GHOSTTY -> "Terminal-inspired contrast"
+                AMOLED -> "True black for OLED screens"
+                OCEAN -> "Calm cyan and deep blue"
+                ROSE -> "Soft rose and plum accents"
+                NORD -> "Arctic blue-gray palette"
+                GLASS -> "Translucent layered surfaces"
+                AUTO -> "Follow the device setting"
+            }
 
     companion object {
         fun fromKey(key: String?): AppTheme = entries.firstOrNull { it.key == key } ?: DARK
@@ -44,6 +83,11 @@ fun themeColorsFor(
         AppTheme.MIDNIGHT -> MidnightTheme
         AppTheme.CLAUDE -> ClaudeTheme
         AppTheme.GHOSTTY -> GhosttyTheme
+        AppTheme.AMOLED -> AmoledTheme
+        AppTheme.OCEAN -> OceanTheme
+        AppTheme.ROSE -> RoseTheme
+        AppTheme.NORD -> NordTheme
+        AppTheme.GLASS -> GlassTheme
         AppTheme.AUTO -> if (systemDark) DarkTheme else LightTheme
     }
 

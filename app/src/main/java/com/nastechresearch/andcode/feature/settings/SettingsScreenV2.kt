@@ -1,7 +1,9 @@
 package com.nastechresearch.andcode.feature.settings
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -53,6 +55,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -61,6 +64,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nastechresearch.andcode.R
 import com.nastechresearch.andcode.ui.theme.AndCodeTheme
+import com.nastechresearch.andcode.ui.theme.AppTheme
+import com.nastechresearch.andcode.ui.theme.themeColorsFor
 
 /** Compact settings landing screen backed only by real destinations and state. */
 @Composable
@@ -410,35 +415,57 @@ fun SettingsScreenV2(
     }
 
     if (showThemeDialog) {
-        val themes = listOf("dark", "light", "zinc", "midnight", "claude", "ghostty", "auto")
+        val themes = AppTheme.entries
         AlertDialog(
             onDismissRequest = { showThemeDialog = false },
             title = { Text(stringResource(R.string.theme_dialog_title)) },
             text = {
                 Column {
                     themes.forEach { theme ->
+                        val preview = themeColorsFor(theme, systemDark = true)
                         Row(
                             modifier =
                                 Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        onThemeChange(theme)
+                                        onThemeChange(theme.key)
                                         showThemeDialog = false
                                     }
                                     .padding(vertical = 4.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             RadioButton(
-                                selected = currentTheme == theme,
+                                selected = currentTheme == theme.key,
                                 onClick = {
-                                    onThemeChange(theme)
+                                    onThemeChange(theme.key)
                                     showThemeDialog = false
                                 },
                             )
-                            Text(
-                                text = theme.replaceFirstChar { it.uppercase() },
-                                modifier = Modifier.padding(start = 8.dp),
-                            )
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .padding(start = 4.dp, end = 10.dp)
+                                        .size(28.dp)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(preview.surface1),
+                            ) {
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .padding(5.dp)
+                                            .size(10.dp)
+                                            .clip(RoundedCornerShape(50))
+                                            .background(preview.accent),
+                                )
+                            }
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(text = theme.displayName)
+                                Text(
+                                    text = theme.description,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
                         }
                     }
                 }
