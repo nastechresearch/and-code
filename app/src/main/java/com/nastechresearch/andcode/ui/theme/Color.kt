@@ -211,3 +211,108 @@ val GhosttyTheme =
         statusIdle = Color(0xFF6B7385),
         statusUnread = Color(0xFF4C8DF6),
     )
+
+val AmoledTheme =
+    DarkTheme.copy(
+        surface0 = Color.Black,
+        surface1 = Color(0xFF050505),
+        surface2 = Color(0xFF101010),
+        surface3 = Color(0xFF181818),
+        surface4 = Color(0xFF242424),
+        surfaceSidebar = Color.Black,
+        border = Color(0xFF222222),
+        borderAccent = Color(0xFF3A3A3A),
+        accent = Color(0xFF9CC2FF),
+        accentBright = Color(0xFFC1D8FF),
+        accentForeground = Color.Black,
+    )
+
+val OceanTheme =
+    DarkTheme.copy(
+        surface0 = Color(0xFF071A24),
+        surface1 = Color(0xFF0B2533),
+        surface2 = Color(0xFF103547),
+        surface3 = Color(0xFF16445A),
+        surface4 = Color(0xFF1D5870),
+        surfaceSidebar = Color(0xFF06151E),
+        foreground = Color(0xFFE1F5FE),
+        foregroundMuted = Color(0xFF8DB9C9),
+        foregroundExtraMuted = Color(0xFF5E8999),
+        border = Color(0xFF1B5065),
+        borderAccent = Color(0xFF2B7088),
+        accent = Color(0xFF67E8F9),
+        accentBright = Color(0xFFA5F3FC),
+        accentForeground = Color(0xFF071A24),
+        secondary = Color(0xFF7DD3FC),
+    )
+
+val RoseTheme =
+    DarkTheme.copy(
+        surface0 = Color(0xFF21151D),
+        surface1 = Color(0xFF2B1B26),
+        surface2 = Color(0xFF382332),
+        surface3 = Color(0xFF472D3F),
+        surface4 = Color(0xFF5A394E),
+        surfaceSidebar = Color(0xFF1A1017),
+        foreground = Color(0xFFFFF1F5),
+        foregroundMuted = Color(0xFFD0A9B8),
+        foregroundExtraMuted = Color(0xFF9F7184),
+        border = Color(0xFF573548),
+        borderAccent = Color(0xFF75465D),
+        accent = Color(0xFFF9A8D4),
+        accentBright = Color(0xFFFBCFE8),
+        accentForeground = Color(0xFF21151D),
+        secondary = Color(0xFFF0ABFC),
+    )
+
+val NordTheme =
+    ThemeColors(
+        surface0 = Color(0xFF2E3440),
+        surface1 = Color(0xFF3B4252),
+        surface2 = Color(0xFF434C5E),
+        surface3 = Color(0xFF4C566A),
+        surface4 = Color(0xFF5E687D),
+        surfaceSidebar = Color(0xFF272C36),
+        foreground = Color(0xFFECEFF4),
+        foregroundMuted = Color(0xFFD8DEE9),
+        foregroundExtraMuted = Color(0xFF9AA5B5),
+        border = Color(0xFF4C566A),
+        borderAccent = Color(0xFF616E84),
+        accent = Color(0xFF88C0D0),
+        accentBright = Color(0xFF8FBCBB),
+        accentForeground = Color(0xFF2E3440),
+        secondary = Color(0xFF81A1C1),
+        destructive = Color(0xFFBF616A),
+        success = Color(0xFFA3BE8C),
+        warning = Color(0xFFEBCB8B),
+        diffAddition = Color(0x2AA3BE8C),
+        diffDeletion = Color(0x2ABF616A),
+        statusRunning = Color(0xFFA3BE8C),
+        statusWaiting = Color(0xFF81A1C1),
+        statusError = Color(0xFFBF616A),
+        statusPermission = Color(0xFFEBCB8B),
+        statusIdle = Color(0xFF9AA5B5),
+        statusUnread = Color(0xFF88C0D0),
+    )
+
+/** A translucent midnight palette designed for layered cards and glass-like surfaces. */
+val GlassTheme =
+    DarkTheme.copy(
+        surface0 = Color(0xE6101726),
+        surface1 = Color(0xCC1B2940),
+        surface2 = Color(0xB32A3E5A),
+        surface3 = Color(0xA63B5676),
+        surface4 = Color(0x995A78A0),
+        surfaceSidebar = Color(0xD90C1422),
+        foreground = Color(0xFFF2F7FF),
+        foregroundMuted = Color(0xFFB8C8DD),
+        foregroundExtraMuted = Color(0xFF8194AD),
+        border = Color(0x665F8BB8),
+        borderAccent = Color(0x997DA8D3),
+        accent = Color(0xFF9BD6FF),
+        accentBright = Color(0xFFC7EAFF),
+        accentForeground = Color(0xFF102033),
+        secondary = Color(0xFFB7A7FF),
+        diffAddition = Color(0x3A6FCF97),
+        diffDeletion = Color(0x3AF07178),
+    )
