@@ -12,7 +12,6 @@ import com.nastechresearch.andcode.runtime.LocalAgent
 import com.nastechresearch.andcode.runtime.LocalRuntimeStatus
 import com.nastechresearch.andcode.runtime.RuntimeRegistry
 import com.nastechresearch.andcode.runtime.RuntimeState
-import com.nastechresearch.andcode.runtime.RuntimeTarget
 import com.nastechresearch.andcode.runtime.RuntimeType
 import com.nastechresearch.andcode.runtime.WorkspaceRef
 import com.nastechresearch.andcode.runtime.local.ClaudeCodeController
@@ -20,6 +19,7 @@ import com.nastechresearch.andcode.runtime.local.ClaudeCodeUiState
 import com.nastechresearch.andcode.runtime.local.ClaudePermissionMode
 import com.nastechresearch.andcode.runtime.local.LocalRuntimeManager
 import com.nastechresearch.andcode.runtime.local.LocalRuntimeServiceController
+import com.nastechresearch.andcode.runtime.nastech.NastechApiClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -330,7 +330,10 @@ class WorkspaceViewModel(
         if (!form.canSave) {
             return Result.failure(IllegalArgumentException(incompleteConnectionMessage))
         }
-        return runCatching { OpenCodeApiClient(form.toProfile()).health() }
+        return runCatching {
+            val profile = form.toProfile()
+            if (profile.runtime == "nastech") NastechApiClient(profile).health() else OpenCodeApiClient(profile).health()
+        }
     }
 
     /** [agents] is the setup guide's selection; every other caller means OpenCode alone. */

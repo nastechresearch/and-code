@@ -13,11 +13,15 @@ data class ConnectionProfile(
     @SerialName("baseUrl") val baseUrl: String,
     @SerialName("username") val username: String = "opencode",
     @SerialName("password") val password: String? = null,
+    /** Bearer credential used by Nastech-Agent's API server. */
+    @SerialName("apiKey") val apiKey: String? = null,
+    /** Connection protocol owned by the remote runtime. Defaults to OpenCode for old profiles. */
+    @SerialName("runtime") val runtime: String = "opencode",
     @SerialName("allowInsecureLan") val allowInsecureLan: Boolean = false,
     @SerialName("pinSha256") val pinSha256: String? = null,
 ) {
     override fun toString(): String =
-        "ConnectionProfile(id=$id, name=$name, baseUrl=$baseUrl, username=$username, password=<redacted>, allowInsecureLan=$allowInsecureLan, pinSha256=<redacted>)"
+        "ConnectionProfile(id=$id, name=$name, baseUrl=$baseUrl, username=$username, password=<redacted>, apiKey=<redacted>, runtime=$runtime, allowInsecureLan=$allowInsecureLan, pinSha256=<redacted>)"
 }
 
 object ConnectionProfileCodec {
