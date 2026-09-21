@@ -249,7 +249,6 @@ fun ChatHomeScreen(
     val coroutineScope = rememberCoroutineScope()
     var showSlashCommands by remember { mutableStateOf(false) }
     var showSidePanel by remember { mutableStateOf(false) }
-    var showControlCenter by remember { mutableStateOf(false) }
     val context = androidx.compose.ui.platform.LocalContext.current
     val imageSaveLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("image/*")) { uri ->
@@ -395,7 +394,7 @@ fun ChatHomeScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { showControlCenter = !showControlCenter }) {
+                    IconButton(onClick = onNewChat) {
                         Icon(Icons.Default.Add, contentDescription = stringResource(R.string.new_chat))
                     }
                 },
@@ -574,8 +573,6 @@ fun ChatHomeScreen(
                     },
                     onAbort = onAbort,
                     onMic = onMic,
-                    controlCenterOpen = showControlCenter,
-                    onControlCenterToggle = { showControlCenter = !showControlCenter },
                     isListening = state.isListening,
                     isSpeechProcessing = state.isSpeechProcessing,
                     modelLabel =
@@ -1146,8 +1143,6 @@ private fun ChatComposer(
     onSend: () -> Unit,
     onAbort: () -> Unit,
     onMic: () -> Unit,
-    controlCenterOpen: Boolean,
-    onControlCenterToggle: () -> Unit,
     isListening: Boolean,
     isSpeechProcessing: Boolean,
     modelLabel: String,
@@ -1251,16 +1246,6 @@ private fun ChatComposer(
             modifier = Modifier.padding(bottom = 4.dp),
         )
 
-        AnimatedVisibility(visible = controlCenterOpen) {
-            ControlCenterPanel(
-                onBuild = onModelChipClick,
-                onAuto = { if (supportsPermissions) onToggleAutoAccept(!autoAcceptPermissions) },
-                onContext = {},
-                onTools = { showAttachMenu = true },
-                onModels = onModelChipClick,
-            )
-        }
-
         if (attachedImages.isNotEmpty()) {
             LazyRow(
                 modifier = Modifier.padding(bottom = 4.dp),
@@ -1363,7 +1348,7 @@ private fun ChatComposer(
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
                     Box {
-                        AttachButton(onClick = onControlCenterToggle)
+                        AttachButton(onClick = { showAttachMenu = true })
                         DropdownMenu(
                             expanded = showAttachMenu,
                             onDismissRequest = { showAttachMenu = false },
@@ -1421,6 +1406,37 @@ private fun ChatComposer(
                     if (isListening) {
                         VolumeMeter(amplitude = 0.5f, idle = true)
                     }
+                    val micContainerColor =
+                        if (voiceActive) {
+                            MaterialTheme.colorScheme.primaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.surfaceVariant
+                        }
+                    val micContentColor =
+                        if (voiceActive) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        }
+                    Surface(
+                        modifier =
+                            Modifier
+                                .size(38.dp)
+                                .clip(RoundedCornerShape(19.dp))
+                                .testTag("chat-mic-button"),
+                        shape = RoundedCornerShape(19.dp),
+                        color = micContainerColor,
+                    ) {
+                        IconButton(onClick = onMic, modifier = Modifier.fillMaxSize()) {
+                            Icon(
+                                if (voiceActive) Icons.Default.Stop else Icons.Default.Mic,
+                                contentDescription =
+                                    stringResource(if (voiceActive) R.string.stop_run else R.string.voice),
+                                modifier = Modifier.size(21.dp),
+                                tint = micContentColor,
+                            )
+                        }
+                    }
                     if (isRunning) {
                         if (sendBehavior == "queue") {
                             Surface(
@@ -1439,35 +1455,16 @@ private fun ChatComposer(
                             Icon(Icons.Default.Stop, contentDescription = stringResource(R.string.stop_run))
                         }
                     } else {
-                        if (input.isBlank() && attachments.isEmpty() || voiceActive) {
-                            val micContainerColor =
-                                if (voiceActive) {
-                                    MaterialTheme.colorScheme.primaryContainer
-                                } else {
-                                    MaterialTheme.colorScheme.surfaceVariant
-                                }
-                            Surface(
-                                modifier = Modifier.size(38.dp).clip(RoundedCornerShape(19.dp)).testTag("chat-mic-button"),
-                                shape = RoundedCornerShape(19.dp),
-                                color = micContainerColor,
-                            ) {
-                                IconButton(onClick = onMic, modifier = Modifier.fillMaxSize()) {
-                                    Icon(
-                                        if (voiceActive) Icons.Default.Stop else Icons.Default.Mic,
-                                        contentDescription = stringResource(if (voiceActive) R.string.stop_run else R.string.voice),
-                                        modifier = Modifier.size(21.dp),
-                                        tint = if (voiceActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                                    )
-                                }
-                            }
-                        } else {
-                            FilledIconButton(onClick = onSend, modifier = Modifier.size(38.dp)) {
-                                Icon(
-                                    Icons.AutoMirrored.Filled.Send,
-                                    contentDescription = stringResource(R.string.send_description),
-                                    modifier = Modifier.size(20.dp),
-                                )
-                            }
+                        FilledIconButton(
+                            onClick = onSend,
+                            enabled = input.isNotBlank() || attachments.isNotEmpty(),
+                            modifier = Modifier.size(38.dp),
+                        ) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.Send,
+                                contentDescription = stringResource(R.string.send_description),
+                                modifier = Modifier.size(20.dp),
+                            )
                         }
                     }
                 }
@@ -2100,66 +2097,5 @@ private fun ChatHomeScreenEmptyPreview() {
             onOpenRemoteSetup = {},
             onOpenDrawer = {},
         )
-    }
-}
-
-@Composable
-private fun ControlCenterPanel(
-    onBuild: () -> Unit,
-    onAuto: () -> Unit,
-    onContext: () -> Unit,
-    onTools: () -> Unit,
-    onModels: () -> Unit,
-) {
-    Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Text(
-            text = "Add / Configure",
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = 4.dp),
-        )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            ControlCenterTile("Build", "Coding mode", Icons.Default.Terminal, Modifier.weight(1f), onBuild)
-            ControlCenterTile("Auto", "Agent mode", Icons.Default.Psychology, Modifier.weight(1f), onAuto)
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            ControlCenterTile("Context", "Files & data", Icons.Default.PendingActions, Modifier.weight(1f), onContext)
-            ControlCenterTile("Tools", "Attachments & tools", Icons.Default.Tune, Modifier.weight(1f), onTools)
-        }
-        ControlCenterTile("Models & Modes", "Configure AI", Icons.Default.Tune, Modifier.fillMaxWidth(), onModels)
-    }
-}
-
-@Composable
-private fun ControlCenterTile(
-    title: String,
-    subtitle: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    modifier: Modifier,
-    onClick: () -> Unit,
-) {
-    Surface(
-        modifier = modifier.clickable(onClick = onClick),
-        shape = RoundedCornerShape(14.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.72f),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.55f)),
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(9.dp),
-        ) {
-            Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
-                Text(subtitle, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-        }
     }
 }
