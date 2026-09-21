@@ -15,6 +15,7 @@ data class ConnectionProfile(
     @SerialName("password") val password: String? = null,
     /** Bearer credential used by Nastech-Agent's API server. */
     @SerialName("apiKey") val apiKey: String? = null,
+    @SerialName("dashboardUrl") val dashboardUrl: String? = null,
     /** Connection protocol owned by the remote runtime. Defaults to OpenCode for old profiles. */
     @SerialName("runtime") val runtime: String = "opencode",
     @SerialName("allowInsecureLan") val allowInsecureLan: Boolean = false,

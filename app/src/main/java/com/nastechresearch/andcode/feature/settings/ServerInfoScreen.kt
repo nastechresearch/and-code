@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nastechresearch.andcode.R
 import com.nastechresearch.andcode.runtime.RuntimeRegistry
+import com.nastechresearch.andcode.runtime.nastech.NastechRuntimeControl
 import com.nastechresearch.andcode.ui.ViewModelFactory
 import com.nastechresearch.andcode.ui.components.StatusChip
 
@@ -61,6 +62,7 @@ import com.nastechresearch.andcode.ui.components.StatusChip
 @Composable
 fun ServerInfoScreen(
     registry: RuntimeRegistry,
+    onOpenDashboard: (String) -> Unit = {},
     onBack: () -> Unit,
 ) {
     val viewModel: ServerInfoViewModel =
@@ -69,6 +71,7 @@ fun ServerInfoScreen(
             factory = ViewModelFactory { ServerInfoViewModel(registry) },
         )
     val state by viewModel.state.collectAsState()
+    val selectedTarget by registry.selected.collectAsState()
     var selectedTab by remember { mutableIntStateOf(0) }
     val snackbarHostState = remember { SnackbarHostState() }
     val configSavedMessage = stringResource(R.string.server_info_config_saved)
@@ -90,6 +93,11 @@ fun ServerInfoScreen(
                     }
                 },
                 actions = {
+                    (selectedTarget as? NastechRuntimeControl)?.dashboardUrl?.let { url ->
+                        TextButton(onClick = { onOpenDashboard(url) }) {
+                            Text("Dashboard")
+                        }
+                    }
                     IconButton(onClick = viewModel::refresh) {
                         Icon(Icons.Default.Refresh, contentDescription = stringResource(R.string.refresh))
                     }
@@ -120,6 +128,13 @@ fun ServerInfoScreen(
                     onClick = { selectedTab = 3 },
                     text = { Text(stringResource(R.string.server_info_tab_skills)) },
                 )
+                if (state.toolsetsJson != null) {
+                    Tab(
+                        selected = selectedTab == 4,
+                        onClick = { selectedTab = 4 },
+                        text = { Text("Toolsets") },
+                    )
+                }
             }
 
             if (state.isLoading) {
@@ -136,6 +151,7 @@ fun ServerInfoScreen(
                     1 -> ProvidersTab(state)
                     2 -> CommandsTab(state)
                     3 -> SkillsTab(state)
+                    4 -> ToolsetsTab(state)
                 }
             }
         }
@@ -368,5 +384,20 @@ private fun SkillsTab(state: ServerInfoUiState) {
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ToolsetsTab(state: ServerInfoUiState) {
+    Surface(
+        modifier = Modifier.fillMaxSize().padding(16.dp),
+        shape = MaterialTheme.shapes.medium,
+        tonalElevation = 1.dp,
+    ) {
+        Text(
+            text = state.toolsetsJson ?: "{}",
+            modifier = Modifier.padding(12.dp).horizontalScroll(rememberScrollState()),
+            style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace, fontSize = 11.sp),
+        )
     }
 }

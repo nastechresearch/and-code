@@ -312,6 +312,19 @@ fun RemoteConnectionScreen(
                 )
                 if (form.runtime == "nastech") {
                     OutlinedTextField(
+                        value = form.dashboardUrl,
+                        onValueChange = {
+                            form = form.copy(dashboardUrl = it, testSucceeded = false, testMessage = null)
+                        },
+                        label = { Text("Nastech dashboard URL (optional)") },
+                        leadingIcon = { Icon(Icons.Default.Link, contentDescription = "Nastech dashboard URL") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        shape = RoundedCornerShape(14.dp),
+                    )
+                }
+                if (form.runtime == "nastech") {
+                    OutlinedTextField(
                         value = form.apiKey,
                         onValueChange = {
                             form = form.copy(apiKey = it, testSucceeded = false, testMessage = null)

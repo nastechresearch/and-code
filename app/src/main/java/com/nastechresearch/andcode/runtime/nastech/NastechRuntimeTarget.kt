@@ -1,10 +1,13 @@
 package com.nastechresearch.andcode.runtime.nastech
 
+import com.nastechresearch.andcode.core.api.ConfiguredProvider
 import com.nastechresearch.andcode.core.api.OpenCodeAgent
+import com.nastechresearch.andcode.core.api.OpenCodeCommand
 import com.nastechresearch.andcode.core.api.OpenCodeEvent
 import com.nastechresearch.andcode.core.api.OpenCodeHealth
 import com.nastechresearch.andcode.core.api.OpenCodeMessage
 import com.nastechresearch.andcode.core.api.OpenCodeSession
+import com.nastechresearch.andcode.core.api.PermissionRequest
 import com.nastechresearch.andcode.core.api.PromptRequest
 import com.nastechresearch.andcode.core.api.ProviderCatalog
 import com.nastechresearch.andcode.core.api.QuestionRequest
@@ -16,22 +19,33 @@ import com.nastechresearch.andcode.runtime.RuntimeState
 import com.nastechresearch.andcode.runtime.RuntimeTarget
 import com.nastechresearch.andcode.runtime.RuntimeType
 import com.nastechresearch.andcode.runtime.WorkspaceRef
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.launch
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 /** AndCode adapter for the complete Nastech-Agent product. It does not embed Nastech's brain. */
 class NastechRuntimeTarget(
     val profile: ConnectionProfile,
     private val api: NastechApiClient = NastechApiClient(profile),
-) : RuntimeTarget {
+) : RuntimeTarget, NastechRuntimeControl {
     override val id: String = profile.id
     override val displayName: String = profile.name
     override val type: RuntimeType = RuntimeType.REMOTE
     override val kind: BackendKind = BackendKind.REMOTE
-    override val capabilities = RuntimeCapabilities(providerModelList = true, abortsBeforeInterrupt = true)
+    override val dashboardUrl: String? = profile.dashboardUrl
+    override val capabilities =
+        RuntimeCapabilities(
+            permissions = true,
+            toolEvents = true,
+            providerModelList = true,
+            resume = true,
+            abortsBeforeInterrupt = true,
+        )
 
     private val mutableState = MutableStateFlow<RuntimeState>(RuntimeState.Disconnected)
     override val state: StateFlow<RuntimeState> = mutableState.asStateFlow()
@@ -69,7 +83,51 @@ class NastechRuntimeTarget(
 
     override suspend fun listMessages(sessionId: String): List<OpenCodeMessage> = api.messages(sessionId)
 
+    override suspend fun renameSession(
+        sessionId: String,
+        title: String,
+    ): OpenCodeSession = api.renameSession(sessionId, title)
+
+    override suspend fun deleteSession(sessionId: String): Boolean = api.deleteSession(sessionId)
+
     override suspend fun listProviders(): ProviderCatalog = api.providers()
+
+    override suspend fun configProviders(): List<ConfiguredProvider> =
+        api.providers().all.map { provider ->
+            ConfiguredProvider(
+                id = provider.id,
+                name = provider.name,
+                defaultModel = provider.models.values.firstOrNull()?.id,
+                connected = provider.id in api.providers().connected,
+            )
+        }
+
+    override suspend fun skills() = api.skills()
+
+    override suspend fun capabilities() = api.capabilities()
+
+    override suspend fun toolsets() = api.toolsets()
+
+    override suspend fun steer(
+        sessionId: String,
+        message: String,
+    ): Boolean = api.steer(sessionId, message)
+
+    override suspend fun config(): JsonElement =
+        buildJsonObject {
+            put("capabilities", api.capabilities())
+            put("gateway", api.detailedHealth())
+            put("toolsets", api.toolsets())
+        }
+
+    override suspend fun commands(): List<OpenCodeCommand> =
+        listOf(
+            OpenCodeCommand("setup", "Configure Nastech-Agent providers, terminal, gateway, and tools"),
+            OpenCodeCommand("doctor", "Run Nastech-Agent diagnostics"),
+            OpenCodeCommand("gateway", "Configure Telegram and other gateway platforms"),
+            OpenCodeCommand("tools", "Configure Nastech toolsets"),
+            OpenCodeCommand("update", "Update the Nastech-Agent runtime"),
+        )
 
     override suspend fun listAgents(): List<OpenCodeAgent> = listOf(OpenCodeAgent("nastech", "Nastech-Agent", "primary", true))
 
@@ -85,7 +143,7 @@ class NastechRuntimeTarget(
         permissionId: String,
         response: PermissionResponse,
         remember: Boolean,
-    ): Boolean = unsupported("Nastech approval resolution")
+    ): Boolean = api.approve(sessionId, permissionId, response != PermissionResponse.REJECT)
 
     override suspend fun answerQuestion(
         requestId: String,
@@ -100,7 +158,40 @@ class NastechRuntimeTarget(
 
     override suspend fun pendingQuestions(directory: String?): List<QuestionRequest> = emptyList()
 
-    override fun events(): Flow<OpenCodeEvent> = emptyFlow()
+    override fun events(): Flow<OpenCodeEvent> =
+        channelFlow {
+            api.activeRunSnapshot().forEach { (sessionId, runId) ->
+                launch {
+                    api.runEvents(runId).collect { event ->
+                        val type = event["event"]?.toString()?.trim('"') ?: return@collect
+                        when (type) {
+                            "approval.request" -> {
+                                val requestId =
+                                    event["request_id"]?.toString()?.trim('"')
+                                        ?: event["id"]?.toString()?.trim('"')
+                                        ?: runId
+                                send(
+                                    OpenCodeEvent.PermissionAsked(
+                                        PermissionRequest(
+                                            id = requestId,
+                                            sessionId = sessionId,
+                                            permission = event["permission"]?.toString()?.trim('"') ?: "approval",
+                                            patterns = event["command"]?.toString()?.trim('"')?.let(::listOf).orEmpty(),
+                                            metadata = event,
+                                        ),
+                                    ),
+                                )
+                            }
+                            "run.completed", "run.cancelled", "run.failed" -> {
+                                send(OpenCodeEvent.SessionStatusChanged(sessionId, type.removePrefix("run.")))
+                                api.forgetRun(sessionId)
+                            }
+                            else -> send(OpenCodeEvent.SessionStatusChanged(sessionId, type))
+                        }
+                    }
+                }
+            }
+        }
 
     private fun unsupported(capability: String): Nothing = throw UnsupportedOperationException(capability)
 }

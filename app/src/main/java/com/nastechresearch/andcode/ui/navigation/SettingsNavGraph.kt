@@ -471,6 +471,7 @@ fun NavGraphBuilder.settingsNavGraph(
     composable(ROUTE_SETTINGS_SERVER_INFO) {
         com.nastechresearch.andcode.feature.settings.ServerInfoScreen(
             registry = runtimeRegistry,
+            onOpenDashboard = { url -> UrlLauncher.openUrl(context, url) },
             onBack = { navController.popBackStack() },
         )
     }

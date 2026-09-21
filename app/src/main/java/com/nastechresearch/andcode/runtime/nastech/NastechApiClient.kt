@@ -7,12 +7,15 @@ import com.nastechresearch.andcode.core.api.OpenCodeModel
 import com.nastechresearch.andcode.core.api.OpenCodePart
 import com.nastechresearch.andcode.core.api.OpenCodeProvider
 import com.nastechresearch.andcode.core.api.OpenCodeSession
+import com.nastechresearch.andcode.core.api.OpenCodeSkill
 import com.nastechresearch.andcode.core.api.OpenCodeTime
 import com.nastechresearch.andcode.core.api.PromptRequest
 import com.nastechresearch.andcode.core.api.ProviderCatalog
 import com.nastechresearch.andcode.core.security.OpenCodeUrl
 import com.nastechresearch.andcode.data.connection.ConnectionProfile
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -45,6 +48,12 @@ class NastechApiClient(
     private val baseUrl by lazy { OpenCodeUrl.normalize(profile.baseUrl).getOrThrow() }
     private val activeRuns = ConcurrentHashMap<String, String>()
 
+    fun activeRunSnapshot(): Map<String, String> = activeRuns.toMap()
+
+    fun forgetRun(sessionId: String) {
+        activeRuns.remove(sessionId)
+    }
+
     suspend fun health(): OpenCodeHealth {
         val root = get("health")
         return OpenCodeHealth(
@@ -62,6 +71,20 @@ class NastechApiClient(
 
     suspend fun messages(sessionId: String): List<OpenCodeMessage> =
         get("api/sessions/${encode(sessionId)}/messages")["data"]?.jsonArray?.map(::messageFromJson).orEmpty()
+
+    suspend fun renameSession(
+        sessionId: String,
+        title: String,
+    ): OpenCodeSession =
+        sessionFromJson(
+            request("PATCH", "api/sessions/${encode(sessionId)}", buildJsonObject { put("title", title) })
+                .jsonObject["session"] ?: error("Nastech did not return the renamed session"),
+        )
+
+    suspend fun deleteSession(sessionId: String): Boolean {
+        request("DELETE", "api/sessions/${encode(sessionId)}", null)
+        return true
+    }
 
     /** Starts a durable Nastech run and returns immediately so AndCode can poll the transcript. */
     suspend fun send(
@@ -109,6 +132,70 @@ class NastechApiClient(
     }
 
     suspend fun capabilities(): JsonObject = get("v1/capabilities")
+
+    suspend fun detailedHealth(): JsonObject = get("health/detailed")
+
+    suspend fun skills(): List<OpenCodeSkill> =
+        get("v1/skills")["data"]?.jsonArray?.mapNotNull { value ->
+            val skill = value.jsonObject
+            skill["name"]?.jsonPrimitive?.contentOrNull?.let { name ->
+                OpenCodeSkill(
+                    name = name,
+                    description = skill["description"]?.jsonPrimitive?.contentOrNull,
+                    location = skill["location"]?.jsonPrimitive?.contentOrNull,
+                )
+            }
+        }.orEmpty()
+
+    suspend fun toolsets(): JsonObject = get("v1/toolsets")
+
+    suspend fun runStatus(runId: String): JsonObject = get("v1/runs/${encode(runId)}")
+
+    fun runEvents(runId: String): Flow<JsonObject> =
+        channelFlow {
+            withContext(Dispatchers.IO) {
+                val builder = Request.Builder().url(baseUrl.newBuilder().addPathSegments("v1/runs/${encode(runId)}/events").build())
+                if (!profile.apiKey.isNullOrBlank()) builder.header("Authorization", "Bearer ${profile.apiKey}")
+                httpClient.newCall(builder.get().build()).execute().use { response ->
+                    if (!response.isSuccessful) error("Nastech events ${response.code}")
+                    val source = response.body?.source() ?: return@withContext
+                    var data = StringBuilder()
+                    while (!source.exhausted()) {
+                        val line = source.readUtf8Line() ?: break
+                        if (line.startsWith("data:")) data.append(line.removePrefix("data:").trim())
+                        if (line.isEmpty() && data.isNotEmpty()) {
+                            send(Json.parseToJsonElement(data.toString()).jsonObject)
+                            data = StringBuilder()
+                        }
+                    }
+                }
+            }
+        }
+
+    suspend fun steer(
+        sessionId: String,
+        message: String,
+    ): Boolean {
+        val runId = activeRuns[sessionId] ?: return false
+        post("v1/runs/${encode(runId)}/steer", buildJsonObject { put("input", message) })
+        return true
+    }
+
+    suspend fun approve(
+        sessionId: String,
+        approvalId: String,
+        approved: Boolean,
+    ): Boolean {
+        val runId = activeRuns[sessionId] ?: return false
+        post(
+            "v1/runs/${encode(runId)}/approval",
+            buildJsonObject {
+                put("approval_id", approvalId)
+                put("approved", approved)
+            },
+        )
+        return true
+    }
 
     private suspend fun get(path: String): JsonObject = request("GET", path, null).jsonObject
 

@@ -12,6 +12,7 @@ data class ConnectionFormState(
     val username: String = "opencode",
     val password: String = "",
     val apiKey: String = "",
+    val dashboardUrl: String = "",
     val allowInsecureLan: Boolean = false,
     val isTesting: Boolean = false,
     val testMessage: String? = null,
@@ -41,6 +42,7 @@ data class ConnectionFormState(
             username = username.trim().ifBlank { "opencode" },
             password = password.takeIf { it.isNotBlank() },
             apiKey = apiKey.takeIf { it.isNotBlank() },
+            dashboardUrl = dashboardUrl.takeIf { it.isNotBlank() },
             // `opencode serve` on a PC is plain HTTP on the LAN. normalize() has already limited
             // cleartext to private address space, so record the allowance here instead of asking
             // the user to tick a box before the connection can be saved at all.
@@ -58,6 +60,7 @@ data class ConnectionFormState(
                 username = profile.username,
                 password = profile.password.orEmpty(),
                 apiKey = profile.apiKey.orEmpty(),
+                dashboardUrl = profile.dashboardUrl.orEmpty(),
                 allowInsecureLan = profile.allowInsecureLan,
                 testSucceeded = true,
             )
