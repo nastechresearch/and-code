@@ -893,6 +893,7 @@
     <string name="agent_opencode_name">OpenCode</string>
     <string name="agent_claude_code_name">Claude Code</string>
     <string name="agent_antigravity_name">Antigravity</string>
+    <string name="agent_nastech_name">Nastech-Agent</string>
     <string name="runtime_error_install_failed">No se pudo instalar el entorno local</string>
     <string name="runtime_error_reinstall_failed">No se pudo reinstalar el entorno local</string>
     <string name="runtime_error_start_failed">No se pudo iniciar OpenCode local</string>
@@ -976,6 +977,8 @@
     <string name="setup_agent_claude_code_desc">Inicie sesión con su cuenta de Claude en el navegador. Descarga unos 80 MB.</string>
     <string name="setup_agent_opencode_desc">Inicie sesión con su propia clave de API de proveedor de modelos. Descarga unos 120 MB.</string>
     <string name="setup_agent_antigravity_desc">Inicie sesión con su cuenta de Google en el navegador. Descarga unos 50 MB.</string>
+    <string name="setup_agent_nastech_desc">Conéctese a su servidor completo de Nastech-Agent, incluido Telegram, el panel, las herramientas y los comandos de configuración y diagnóstico. Se ejecuta de forma remota; no se descarga nada en este dispositivo.</string>
+    <string name="setup_agent_nastech_connect">Conectar Nastech-Agent</string>
     <string name="setup_agents_required">Seleccione al menos un agente para continuar.</string>
     <string name="setup_step_sign_in">Iniciar sesión</string>
     <string name="setup_sign_in_description">Conecte las cuentas que usarán sus agentes.</string>
