@@ -145,7 +145,7 @@ fun RemoteConnectionScreen(
                             testSucceeded = health.healthy,
                             testMessage =
                                 if (health.healthy) {
-                                    "OpenCode ${health.version}"
+                                    "${if (form.runtime == "nastech") "Nastech-Agent" else "OpenCode"} ${health.version}"
                                 } else {
                                     context.getString(R.string.remote_connection_unhealthy)
                                 },
@@ -276,6 +276,19 @@ fun RemoteConnectionScreen(
                     singleLine = true,
                     shape = RoundedCornerShape(14.dp),
                 )
+                OutlinedButton(
+                    onClick = {
+                        form =
+                            form.copy(
+                                runtime = if (form.runtime == "nastech") "opencode" else "nastech",
+                                testSucceeded = false,
+                                testMessage = null,
+                            )
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(if (form.runtime == "nastech") "Runtime: Nastech-Agent" else "Runtime: OpenCode")
+                }
                 val urlInvalid = form.baseUrl.isNotBlank() && form.normalizedUrl == null
                 OutlinedTextField(
                     value = form.baseUrl,
@@ -297,41 +310,69 @@ fun RemoteConnectionScreen(
                         },
                     shape = RoundedCornerShape(14.dp),
                 )
-                OutlinedTextField(
-                    value = form.username,
-                    onValueChange = {
-                        form = form.copy(username = it, testSucceeded = false, testMessage = null)
-                    },
-                    label = { Text(stringResource(R.string.username)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    shape = RoundedCornerShape(14.dp),
-                )
-                OutlinedTextField(
-                    value = form.password,
-                    onValueChange = {
-                        form = form.copy(password = it, testSucceeded = false, testMessage = null)
-                    },
-                    label = { Text(stringResource(R.string.password)) },
-                    leadingIcon = { Icon(Icons.Default.Key, contentDescription = stringResource(R.string.cd_password)) },
-                    trailingIcon = {
-                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Icon(
-                                if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                                contentDescription = stringResource(R.string.cd_toggle_password),
-                            )
-                        }
-                    },
-                    visualTransformation =
-                        if (passwordVisible) {
-                            VisualTransformation.None
-                        } else {
-                            PasswordVisualTransformation()
+                if (form.runtime == "nastech") {
+                    OutlinedTextField(
+                        value = form.dashboardUrl,
+                        onValueChange = {
+                            form = form.copy(dashboardUrl = it, testSucceeded = false, testMessage = null)
                         },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    shape = RoundedCornerShape(14.dp),
-                )
+                        label = { Text("Nastech dashboard URL (optional)") },
+                        leadingIcon = { Icon(Icons.Default.Link, contentDescription = "Nastech dashboard URL") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        shape = RoundedCornerShape(14.dp),
+                    )
+                }
+                if (form.runtime == "nastech") {
+                    OutlinedTextField(
+                        value = form.apiKey,
+                        onValueChange = {
+                            form = form.copy(apiKey = it, testSucceeded = false, testMessage = null)
+                        },
+                        label = { Text("Nastech API key") },
+                        leadingIcon = { Icon(Icons.Default.Key, contentDescription = "Nastech API key") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        shape = RoundedCornerShape(14.dp),
+                    )
+                } else {
+                    OutlinedTextField(
+                        value = form.username,
+                        onValueChange = {
+                            form = form.copy(username = it, testSucceeded = false, testMessage = null)
+                        },
+                        label = { Text(stringResource(R.string.username)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        shape = RoundedCornerShape(14.dp),
+                    )
+                    OutlinedTextField(
+                        value = form.password,
+                        onValueChange = {
+                            form = form.copy(password = it, testSucceeded = false, testMessage = null)
+                        },
+                        label = { Text(stringResource(R.string.password)) },
+                        leadingIcon = { Icon(Icons.Default.Key, contentDescription = stringResource(R.string.cd_password)) },
+                        trailingIcon = {
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(
+                                    if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                    contentDescription = stringResource(R.string.cd_toggle_password),
+                                )
+                            }
+                        },
+                        visualTransformation =
+                            if (passwordVisible) {
+                                VisualTransformation.None
+                            } else {
+                                PasswordVisualTransformation()
+                            },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        shape = RoundedCornerShape(14.dp),
+                    )
+                }
             }
 
             Row(

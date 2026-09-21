@@ -6,6 +6,7 @@ import com.nastechresearch.andcode.core.api.ConfiguredProvider
 import com.nastechresearch.andcode.core.api.OpenCodeCommand
 import com.nastechresearch.andcode.core.api.OpenCodeSkill
 import com.nastechresearch.andcode.runtime.RuntimeRegistry
+import com.nastechresearch.andcode.runtime.nastech.NastechRuntimeControl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,11 +20,19 @@ data class ServerInfoUiState(
     val configProviders: List<ConfiguredProvider> = emptyList(),
     val commands: List<OpenCodeCommand> = emptyList(),
     val skills: List<OpenCodeSkill> = emptyList(),
+    val toolsetsJson: String? = null,
     val isLoading: Boolean = false,
     val error: String? = null,
     val configEditDraft: String? = null,
     val isSaving: Boolean = false,
     val saveSuccess: Boolean = false,
+)
+
+private data class ServerInfoPayload(
+    val providers: List<ConfiguredProvider>,
+    val commands: List<OpenCodeCommand>,
+    val skills: List<OpenCodeSkill>,
+    val toolsets: String?,
 )
 
 class ServerInfoViewModel(
@@ -50,15 +59,17 @@ class ServerInfoViewModel(
                 val providers = runCatching { backend.configProviders() }.getOrDefault(emptyList())
                 val commands = runCatching { backend.commands() }.getOrDefault(emptyList())
                 val skills = runCatching { backend.skills() }.getOrDefault(emptyList())
-                config to Triple(providers, commands, skills)
+                val toolsets = (backend as? NastechRuntimeControl)?.let { runCatching { it.toolsets() }.getOrNull() }
+                config to ServerInfoPayload(providers, commands, skills, toolsets?.toString())
             }.onSuccess { (config, data) ->
-                val (providers, commands, skills) = data
+                val (providers, commands, skills, toolsets) = data
                 _state.update {
                     it.copy(
                         configJson = config.toString(),
                         configProviders = providers,
                         commands = commands,
                         skills = skills,
+                        toolsetsJson = toolsets,
                         isLoading = false,
                     )
                 }

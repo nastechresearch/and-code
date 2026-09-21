@@ -74,6 +74,19 @@ internal fun ConnectionDialog(
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                 )
+                OutlinedButton(
+                    onClick = {
+                        form =
+                            form.copy(
+                                runtime = if (form.runtime == "nastech") "opencode" else "nastech",
+                                testSucceeded = false,
+                                testMessage = null,
+                            )
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(if (form.runtime == "nastech") "Runtime: Nastech-Agent" else "Runtime: OpenCode")
+                }
                 OutlinedTextField(
                     value = form.baseUrl,
                     onValueChange = { form = form.copy(baseUrl = it, testSucceeded = false, testMessage = null) },
@@ -91,22 +104,44 @@ internal fun ConnectionDialog(
                             null
                         },
                 )
-                OutlinedTextField(
-                    value = form.username,
-                    onValueChange = { form = form.copy(username = it) },
-                    label = { Text(stringResource(R.string.username)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                )
-                OutlinedTextField(
-                    value = form.password,
-                    onValueChange = { form = form.copy(password = it, testSucceeded = false, testMessage = null) },
-                    label = { Text(stringResource(R.string.password)) },
-                    leadingIcon = { Icon(Icons.Default.Key, contentDescription = stringResource(R.string.cd_password)) },
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                )
+                if (form.runtime == "nastech") {
+                    OutlinedTextField(
+                        value = form.dashboardUrl,
+                        onValueChange = { form = form.copy(dashboardUrl = it, testSucceeded = false, testMessage = null) },
+                        label = { Text("Nastech dashboard URL (optional)") },
+                        leadingIcon = { Icon(Icons.Default.Link, contentDescription = "Nastech dashboard URL") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                    )
+                }
+                if (form.runtime == "nastech") {
+                    OutlinedTextField(
+                        value = form.apiKey,
+                        onValueChange = { form = form.copy(apiKey = it, testSucceeded = false, testMessage = null) },
+                        label = { Text("Nastech API key") },
+                        leadingIcon = { Icon(Icons.Default.Key, contentDescription = "Nastech API key") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                    )
+                } else {
+                    OutlinedTextField(
+                        value = form.username,
+                        onValueChange = { form = form.copy(username = it) },
+                        label = { Text(stringResource(R.string.username)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                    )
+                    OutlinedTextField(
+                        value = form.password,
+                        onValueChange = { form = form.copy(password = it, testSucceeded = false, testMessage = null) },
+                        label = { Text(stringResource(R.string.password)) },
+                        leadingIcon = { Icon(Icons.Default.Key, contentDescription = stringResource(R.string.cd_password)) },
+                        visualTransformation = PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                    )
+                }
                 // No cleartext opt-in here: OpenCodeUrl.normalize already limits plain HTTP to
                 // loopback, RFC1918, link-local, Tailscale CGNAT and .local hosts, and anything
                 // beyond that has to be https. A checkbox would only add a step in front of the

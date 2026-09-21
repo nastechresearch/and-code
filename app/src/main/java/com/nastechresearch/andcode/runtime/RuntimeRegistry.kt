@@ -1,6 +1,7 @@
 package com.nastechresearch.andcode.runtime
 
 import com.nastechresearch.andcode.data.connection.ConnectionProfile
+import com.nastechresearch.andcode.runtime.nastech.NastechRuntimeTarget
 import com.nastechresearch.andcode.runtime.remote.RemoteRuntimeTarget
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,7 +12,7 @@ class RuntimeRegistry(
     private val localTarget: RuntimeTarget,
     private val additionalTargets: List<RuntimeTarget> = emptyList(),
     private val remoteFactory: (ConnectionProfile) -> RuntimeTarget = { profile ->
-        RemoteRuntimeTarget(profile)
+        if (profile.runtime == "nastech") NastechRuntimeTarget(profile) else RemoteRuntimeTarget(profile)
     },
 ) {
     /**
