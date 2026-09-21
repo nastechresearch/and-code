@@ -128,6 +128,7 @@ fun AndroidSetupScreen(
     onDisconnectGitHub: () -> Unit = {},
     onBack: () -> Unit,
     onFinish: () -> Unit,
+    onOpenNastechConnection: () -> Unit = {},
 ) {
     val context = LocalContext.current
     var selectedAgents by rememberSaveable(
@@ -325,6 +326,7 @@ fun AndroidSetupScreen(
                             selectedAgents =
                                 if (agent in selectedAgents) selectedAgents - agent else selectedAgents + agent
                         },
+                        onOpenNastechConnection = onOpenNastechConnection,
                     )
                 2 ->
                     DevelopmentToolsStep(
@@ -528,6 +530,7 @@ private fun StepHeader(
 private fun AgentSelectionStep(
     selectedAgents: Set<LocalAgent>,
     onToggle: (LocalAgent) -> Unit,
+    onOpenNastechConnection: () -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         StepHeader(
@@ -553,6 +556,19 @@ private fun AgentSelectionStep(
             selected = LocalAgent.ANTIGRAVITY in selectedAgents,
             onToggle = { onToggle(LocalAgent.ANTIGRAVITY) },
         )
+        SetupPanel {
+            Text(stringResource(R.string.agent_nastech_name), fontWeight = FontWeight.SemiBold)
+            Spacer(Modifier.height(4.dp))
+            Text(
+                stringResource(R.string.setup_agent_nastech_desc),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(Modifier.height(8.dp))
+            OutlinedButton(onClick = onOpenNastechConnection) {
+                Text(stringResource(R.string.setup_agent_nastech_connect))
+            }
+        }
         if (selectedAgents.size >= 2) {
             Text(
                 text = stringResource(R.string.setup_runtime_shared_note),

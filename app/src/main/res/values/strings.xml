@@ -890,6 +890,7 @@
     <string name="agent_opencode_name">OpenCode</string>
     <string name="agent_claude_code_name">Claude Code</string>
     <string name="agent_antigravity_name">Antigravity</string>
+    <string name="agent_nastech_name">Nastech-Agent</string>
     <string name="runtime_error_install_failed">Could not install the local runtime</string>
     <string name="runtime_error_reinstall_failed">Could not reinstall the local runtime</string>
     <string name="runtime_error_start_failed">Could not start local runtime</string>
@@ -973,6 +974,8 @@
     <string name="setup_agent_claude_code_desc">Sign in with your Claude account in the browser. Downloads about 80 MB.</string>
     <string name="setup_agent_opencode_desc">Sign in with your own model provider API key. Downloads about 120 MB.</string>
     <string name="setup_agent_antigravity_desc">Sign in with your Google account in the browser. Downloads about 50 MB.</string>
+    <string name="setup_agent_nastech_desc">Connect to your complete Nastech-Agent server, including Telegram, dashboard, tools, setup, and doctor commands. Runs remotely; nothing is downloaded to this device.</string>
+    <string name="setup_agent_nastech_connect">Connect Nastech-Agent</string>
     <string name="setup_agents_required">Select at least one agent to continue.</string>
     <string name="setup_step_sign_in">Sign in</string>
     <string name="setup_sign_in_description">Connect the accounts your agents will use.</string>
