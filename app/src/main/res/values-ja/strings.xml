@@ -901,7 +901,6 @@
     <string name="agent_opencode_name">OpenCode</string>
     <string name="agent_claude_code_name">Claude Code</string>
     <string name="agent_antigravity_name">Antigravity</string>
-    <string name="agent_nastech_name">Nastech-Agent</string>
     <string name="runtime_error_install_failed">ローカルランタイムの導入に失敗しました</string>
     <string name="runtime_error_reinstall_failed">ローカルランタイムの再導入に失敗しました</string>
     <string name="runtime_error_start_failed">ローカルランタイムを起動できません</string>
@@ -985,8 +984,6 @@
     <string name="setup_agent_claude_code_desc">Claudeアカウントにブラウザでサインインします。約80MBをダウンロードします。</string>
     <string name="setup_agent_opencode_desc">モデルプロバイダーのAPIキーでサインインします。約120MBをダウンロードします。</string>
     <string name="setup_agent_antigravity_desc">Googleアカウントにブラウザでサインインします。約50MBをダウンロードします。</string>
-    <string name="setup_agent_nastech_desc">Telegram、ダッシュボード、ツール、セットアップ、doctor コマンドを含む完全な Nastech-Agent サーバーに接続します。リモートで実行されるため、この端末には何もダウンロードされません。</string>
-    <string name="setup_agent_nastech_connect">Nastech-Agent に接続</string>
     <string name="setup_agents_required">続けるには少なくとも1つ選んでください。</string>
     <string name="setup_step_sign_in">サインイン</string>
     <string name="setup_sign_in_description">エージェントが使用するアカウントを接続します。</string>

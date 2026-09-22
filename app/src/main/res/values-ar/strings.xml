@@ -899,7 +899,6 @@
     <string name="agent_opencode_name">OpenCode</string>
     <string name="agent_claude_code_name">Claude Code</string>
     <string name="agent_antigravity_name">Antigravity</string>
-    <string name="agent_nastech_name">Nastech-Agent</string>
     <string name="runtime_error_install_failed">تعذّر تثبيت بيئة التشغيل المحلية</string>
     <string name="runtime_error_reinstall_failed">تعذّرت إعادة تثبيت بيئة التشغيل المحلية</string>
     <string name="runtime_error_start_failed">تعذّر تشغيل OpenCode المحلي</string>
@@ -983,8 +982,6 @@
     <string name="setup_agent_claude_code_desc">سجّل الدخول بحساب Claude عبر المتصفح. يتم تنزيل حوالي 80 ميغابايت.</string>
     <string name="setup_agent_opencode_desc">سجّل الدخول بمفتاح واجهة مزوّد النماذج الخاص بك. يتم تنزيل حوالي 120 ميغابايت.</string>
     <string name="setup_agent_antigravity_desc">سجّل الدخول بحساب Google عبر المتصفح. يتم تنزيل حوالي 50 ميغابايت.</string>
-    <string name="setup_agent_nastech_desc">اتصل بخادم Nastech-Agent الكامل، بما في ذلك Telegram ولوحة المعلومات والأدوات وأوامر الإعداد والتشخيص. يعمل عن بُعد ولا يتم تنزيل شيء على هذا الجهاز.</string>
-    <string name="setup_agent_nastech_connect">اتصال بـ Nastech-Agent</string>
     <string name="setup_agents_required">اختر وكيلًا واحدًا على الأقل للمتابعة.</string>
     <string name="setup_step_sign_in">تسجيل الدخول</string>
     <string name="setup_sign_in_description">اربط الحسابات التي سيستخدمها وكلاؤك.</string>
