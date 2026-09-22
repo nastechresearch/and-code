@@ -966,7 +966,6 @@ fun AndCodeApp(
                             onRefreshCatalog = app.catalogRepository::refreshProvidersOnly,
                             onRefreshClaudeState = workspaceViewModel::refreshClaudeCode,
                             onRefreshAntigravityState = app.antigravityController::refresh,
-                            onOpenNastechConnection = { navController.navigate(ROUTE_REMOTE_CONNECTION) },
                             onConnectGitHub = { settingsViewModel.beginGitHubDeviceFlow() },
                             onOpenGitHubVerification = { url ->
                                 UrlLauncher.openUrl(context, url)
